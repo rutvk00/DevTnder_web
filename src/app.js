@@ -1,10 +1,12 @@
 const express = require("express")
 const connectDB = require("./config/database")
 app = express()
+const User = require("./models/user")
+
 
 app.use(express.json())
 
-const User = require("./models/user")
+
 
 app.post("/signup" , async (req , res) => {
 
@@ -33,7 +35,40 @@ app.get("/user" , async (req , res) => {
     }catch(error){
         res.status(400).send("Error while getting User : " , error.message``)
     }
-})
+});
+
+app.delete("/user" , async (req, res) => {
+    const _id = req.body.userId;
+
+    try{
+        const user = await User.findByIdAndDelete(_id);
+        res.send("User deleted successfully")
+    }catch(error){
+        res.status(400).send("Error while deleting User : " , error.message``)
+    }
+});
+
+app.patch("/user", async (req, res) => {
+    console.log("----------------------")
+    const data = req.body;
+    console.log(data)
+    const userId = req.body.userId;
+
+    if (!userId) {
+        return res.status(400).send("User ID is required");
+    }
+
+    try {
+        await User.findByIdAndUpdate(userId, data, {
+            new: true,
+            runValidators: true
+        });
+
+        res.send("User updated successfully");
+    } catch (error) {
+        res.status(400).send("Error while updating User: " + error.message);
+    }
+});
 
 connectDB()
     .then(() => {
