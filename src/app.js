@@ -1,5 +1,4 @@
 const express = require("express")
-const req = require("express/lib/request")
 const connectDB = require("./config/database")
 app = express()
 
@@ -19,6 +18,20 @@ app.post("/signup" , async (req , res) => {
         res.send("User Added Sucessfully !!")
     }catch(error){
         res.status(400).send("Error saving user : " + error.message)
+    }
+});
+
+app.get("/user" , async (req , res) => {
+    const emailId = req.body.emailId;
+
+    try{
+        const users = await User.find({emailId : emailId});
+        if(users.length == 0){
+            res.status(404).send("User not found");
+        }
+        res.send(users)
+    }catch(error){
+        res.status(400).send("Error while getting User : " , error.message``)
     }
 })
 
